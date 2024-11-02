@@ -3,6 +3,7 @@ import {
   InvalidParamError,
   ServerError,
 } from "../../errors";
+import { serverError } from "../../helpers/http-helper";
 import { SignUpController } from "../signup/signUpController";
 import {
   EmailValidator,
@@ -197,6 +198,49 @@ describe("SignUp Controller", () => {
       name: "any_name",
       email: "any_email_email@email.com",
       password: "any_password",
+    });
+  });
+
+  test("Should return 500 if addAccount throws", async () => {
+    const { sut, addAccountStub } = makeSut();
+    jest.spyOn(addAccountStub, "add").mockImplementationOnce(() => {
+      throw Error();
+    });
+    const httpRequest = {
+      body: {
+        name: "any_name",
+        email: "any_email_email@email.com",
+        password: "any_password",
+        passwordConfirmation: "any_password",
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toBe(500);
+    expect(httpResponse.body).toEqual(new ServerError());
+  });
+
+  test("Should return 200 addAccount on success ", async () => {
+    const { sut } = makeSut();
+
+    const httpRequest = {
+      body: {
+        name: "valid_name",
+        email: "valid_email@email.com",
+        password: "valid_password",
+        passwordConfirmation: "valid_password",
+      },
+    };
+
+    const httpResponse = await sut.handle(httpRequest);
+
+    expect(httpResponse.statusCode).toBe(200);
+    expect(httpResponse.body).toEqual({
+      id: "valid_id",
+      name: "valid_name",
+      email: "valid_email@email.com",
+      password: "valid_password",
     });
   });
 });
