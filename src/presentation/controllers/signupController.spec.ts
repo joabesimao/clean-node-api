@@ -1,6 +1,7 @@
 import { MissingParamError, InvalidParamError, ServerError } from "../errors";
 import { SignUpController } from "./signUpController";
 import { EmailValidator, HttpRequest } from "../protocols";
+import e from "express";
 
 interface SutTypes {
   sut: SignUpController;
@@ -99,6 +100,23 @@ describe("SignUp Controller", () => {
     expect(httpResponse.body).toEqual(new InvalidParamError("email"));
   });
 
+  test("Should return 400 if passwordConfirmation fails", async () => {
+    const { sut } = makeSut();
+    const httpRequest = {
+      body: {
+        name: "any_name",
+        email: "any_email@email.com",
+        password: "any_password",
+        passwordConfirmation: "invalid_password",
+      },
+    };
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(
+      new InvalidParamError("passwordConfirmation")
+    );
+  });
+
   test("Should call EmailValidator with correct email", async () => {
     const { sut, emailValidatorStub } = makeSut();
     const httpRequest = {
@@ -109,9 +127,8 @@ describe("SignUp Controller", () => {
         passwordConfirmation: "any_password",
       },
     };
-    const spyIsValid = jest
-      .spyOn(emailValidatorStub, "isValid")
-    
+    const spyIsValid = jest.spyOn(emailValidatorStub, "isValid");
+
     await sut.handle(httpRequest);
 
     expect(spyIsValid).toHaveBeenCalledWith("email_email@email.com");
