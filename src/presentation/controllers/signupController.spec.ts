@@ -111,7 +111,7 @@ describe("SignUp Controller", () => {
     };
     const spyIsValid = jest
       .spyOn(emailValidatorStub, "isValid")
-      .mockReturnValueOnce(false);
+    
     await sut.handle(httpRequest);
 
     expect(spyIsValid).toHaveBeenCalledWith("email_email@email.com");
