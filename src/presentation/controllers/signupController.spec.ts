@@ -1,7 +1,5 @@
 import { HttpRequest } from "../protocols/http";
-import { MissingParamError } from "../errors/missing-param-error";
-import { InvalidParamError } from "../errors/invalid-param-error";
-import { ServerError } from "../errors/server-error";
+import { MissingParamError, InvalidParamError, ServerError } from "../errors";
 import { SignUpController } from "./signUpController";
 import { EmailValidator } from "../protocols/email-validator";
 
