@@ -3,7 +3,6 @@ import {
   InvalidParamError,
   ServerError,
 } from "../../errors";
-import { serverError } from "../../helpers/http-helper";
 import { SignUpController } from "../signup/signUpController";
 import {
   EmailValidator,
@@ -30,14 +29,14 @@ const makeEmailValidator = (): EmailValidator => {
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
-    add(account: AddAccountModel): AccountModel {
+    add(account: AddAccountModel): Promise<AccountModel> {
       const fakeAccount = {
         id: "valid_id",
         name: "valid_name",
         email: "valid_email@email.com",
         password: "valid_password",
       };
-      return fakeAccount;
+      return new Promise((resolve) => resolve(fakeAccount));
     }
   }
   return new AddAccountStub();
