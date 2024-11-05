@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { AddAccountRepository } from "../../../../data/protocols/add-account-repository";
 import { AccountModel } from "../../../../domain/models/account-model";
 import { AddAccountModel } from "../../../../domain/usecases/add-account";
@@ -9,14 +8,14 @@ export class AccountMongoRepository implements AddAccountRepository {
     const accountCollection = MongoHelper.getCollection("accounts");
     const result = await accountCollection.insertOne(accountData);
     const object = await accountCollection.findOne(result.insertedId);
-    const { _id, name, email, password } = object;
+    /* const { _id, name, email, password } = object;
     const account: AccountModel = {
       id: _id.toString(),
       name: name,
       email: email,
       password: password,
-    };
-    console.log(account);
-    return account;
+    }; */
+
+    return MongoHelper.map(object);
   }
 }
