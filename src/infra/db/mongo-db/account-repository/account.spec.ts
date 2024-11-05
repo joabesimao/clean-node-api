@@ -1,3 +1,4 @@
+import { async } from "fast-glob";
 import { MongoHelper } from "../helpers/mongo-helper";
 import { AccountMongoRepository } from "./account-mongo-repository";
 
@@ -9,6 +10,12 @@ describe("Account Mongo Repository", () => {
   afterAll(async () => {
     await MongoHelper.disconnect();
   });
+
+  beforeEach(async () => {
+    const accountCollection = MongoHelper.getCollection("accounts");
+    await accountCollection.deleteMany({});
+  });
+
   test("Should return an account on success", async () => {
     const sut = new AccountMongoRepository();
     const account = await sut.add({
