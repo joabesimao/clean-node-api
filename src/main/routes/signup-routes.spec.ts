@@ -4,7 +4,7 @@ import app from "../config/app";
 
 describe("Signup Routes ", () => {
   beforeAll(async () => {
-    await MongoHelper.connect(global.__MONGO_URI__);
+    await MongoHelper.connect(process.env.MONGO_URL);
   });
 
   afterAll(async () => {
@@ -12,7 +12,7 @@ describe("Signup Routes ", () => {
   });
 
   beforeEach(async () => {
-    const accountCollection = MongoHelper.getCollection("accounts");
+    const accountCollection = await MongoHelper.getCollection("accounts");
     await accountCollection.deleteMany({});
   });
   test("Should return an account on success", async () => {
@@ -21,7 +21,7 @@ describe("Signup Routes ", () => {
       .send({
         name: "Joabe",
         email: "joabe.simao@gmail.com",
-        pasword: "123",
+        password: "123",
         passwordConfirmation: "123",
       })
       .expect(200);
