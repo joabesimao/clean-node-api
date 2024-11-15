@@ -12,6 +12,13 @@ const makeEmailValidator = (): EmailValidator => {
   }
   return new EmailValidatorStub();
 };
+
+const makeFakeHttpRequest = (): HttpRequest => ({
+  body: {
+    email: "email@email.com",
+    password: "any_password",
+  },
+});
 interface SutTypes {
   sut: LoginController;
   emailValidatorStub: EmailValidator;
@@ -52,27 +59,16 @@ describe("Login Controller", () => {
   test("Should return 400 if invalid email is provided", async () => {
     const { sut, emailValidatorStub } = makeSut();
     jest.spyOn(emailValidatorStub, "isValid").mockReturnValueOnce(false);
-    const httpRequest: HttpRequest = {
-      body: {
-        email: "email@email.com",
-        password: "any_password",
-      },
-    };
-    const httpResponse = await sut.handle(httpRequest);
+
+    const httpResponse = await sut.handle(makeFakeHttpRequest());
     expect(httpResponse).toEqual(badRequest(new InvalidParamError("email")));
   });
 
   test("Should call EmailValidator with correct email ", async () => {
     const { sut, emailValidatorStub } = makeSut();
 
-    const httpRequest: HttpRequest = {
-      body: {
-        email: "email@email.com",
-        password: "any_password",
-      },
-    };
     const isValidSpy = jest.spyOn(emailValidatorStub, "isValid");
-    await sut.handle(httpRequest);
+    await sut.handle(makeFakeHttpRequest());
     expect(isValidSpy).toHaveBeenCalledWith("email@email.com");
   });
 });
